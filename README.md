@@ -52,6 +52,39 @@ The output is a JSON object, for example:
 { "payment_failed": 1, "failure_probability": 0.62 }
 ```
 
+## Predicting on New Data
+You can use the same `predict.py` script to make predictions on any new data record. Provide a JSON object that matches the feature schema used during training. For batch predictions, create a JSON Lines file where each line is a separate record and modify `predict.py` to read the file and output predictions.
+
+### Example JSON for a single record
+```json
+{
+  "occupation": "worker",
+  "purposeOfTransaction": "shopping",
+  "sourceOfFunds": "Cash",
+  "countryOfBirth": "IN",
+  "nationality": "IN",
+  "idVerificationStatus": "N",
+  "receiver": {"address": {"countryCode": "US"}},
+  "dateOfBirth": "1990-01-01"
+}
+```
+
+### Using the script
+```bash
+python predict.py '{"occupation":"worker","purposeOfTransaction":"shopping","sourceOfFunds":"Cash","countryOfBirth":"IN","nationality":"IN","idVerificationStatus":"N","receiver":{"address":{"countryCode":"US"}},"dateOfBirth":"1990-01-01"}'
+```
+
+The script will print a JSON response with `payment_failed` and `failure_probability`.
+
+For batch predictions, create a file `new_data.jsonl` with one JSON per line and run:
+```bash
+python batch_predict.py new_data.jsonl
+```
+(You can create `batch_predict.py` by copying `predict.py` and looping over each line.)
+
+You can also send the same JSON payload to the FastAPI endpoint as shown in the FastAPI section.
+
+
 ## FastAPI Service
 The FastAPI wrapper (`app.py`) provides a REST endpoint:
 - **Start the server**
