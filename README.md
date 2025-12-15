@@ -1,43 +1,88 @@
-# payment-failure-model
+# Payment Failure Model
 
-Simple machine learning model that predicts whether a payment transaction may fail based on customer KYC and transaction metadata.
+## Overview
+This repository contains a simple machine‑learning pipeline that predicts whether a payment transaction will fail based on customer KYC information and transaction metadata. The model is a logistic regression trained on synthetic data that mimics real‑world payment onboarding records.
 
-This project demonstrates a simple machine learning model that predicts whether a payment transaction may fail based on customer KYC and transaction metadata.
+## Project Structure
+- `userdata.json` – Synthetic dataset used for training and evaluation.
+- `train.py` – Script that loads the data, performs feature engineering, trains a logistic regression model, logs the run with MLflow, and saves the model to `payment_failure_model.pkl`.
+- `predict.py` – Script that loads the saved model and makes a prediction for a single example.
+- `app.py` – FastAPI application exposing a `/predict` endpoint that returns the failure probability.
+- `requirements.txt` – Python dependencies required to run the project.
+- `README.md` – This documentation.
 
-The project uses synthetic data that mimics real-world payment onboarding inputs.
+## Setup
+1. **Create a virtual environment**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+   The required packages include `pandas`, `scikit‑learn`, `mlflow`, `fastapi`, and `uvicorn`.
+3. **Verify the environment**
+   ```bash
+   python -c "import pandas, sklearn, mlflow; print('All imports succeeded')"
+   ```
 
-## Data
-- Format: JSON
-- Records: 50 users
-- Data includes:
-  - KYC details
-  - Occupation
-  - Source of funds
-  - Transaction purpose
-  - Receiver country
+## Training the Model
+Run the training script:
+```bash
+python train.py
+```
+The script will:
+- Load `userdata.json`.
+- Engineer features such as age, ID verification flag, and cross‑border indicator.
+- Split the data into training and test sets.
+- Train a logistic regression model.
+- Log parameters, metrics, and the model artifact to an MLflow tracking server (default local SQLite store).
+- Save the trained model to `payment_failure_model.pkl`.
 
-## Model
-- Algorithm: Logistic Regression
-- Reason:
-  - Simple
-  - Explainable
-  - Suitable for compliance-heavy environments
+After successful execution you will see a classification report and a confirmation that the model file has been saved.
 
-## Features Used
-- Age
-- ID verification status
-- Cross-border indicator
-- Occupation
-- Source of funds
-- Transaction purpose
+## Making a Prediction (CLI)
+Use the `predict.py` script to obtain a prediction for a single record:
+```bash
+python predict.py
+```
+The output is a JSON object, for example:
+```json
+{ "payment_failed": 1, "failure_probability": 0.62 }
+```
 
-## Target
-- payment_failed (0 or 1)
+## FastAPI Service
+The FastAPI wrapper (`app.py`) provides a REST endpoint:
+- **Start the server**
+  ```bash
+  uvicorn app:app --reload
+  ```
+- **POST request** to `http://127.0.0.1:8000/predict` with a JSON payload matching the feature schema. Example using `curl`:
+  ```bash
+  curl -X POST http://127.0.0.1:8000/predict \
+       -H "Content-Type: application/json" \
+       -d '{"occupation":"worker","purposeOfTransaction":"shopping","sourceOfFunds":"Cash","countryOfBirth":"IN","nationality":"IN","idVerificationStatus":"N","receiver":{"address":{"countryCode":"US"}},"dateOfBirth":"1990-01-01"}'
+  ```
+  The response will contain `payment_failure_risk` (0 or 1) and `failure_probability`.
 
-The label is generated using deterministic business rules
-to simulate real failure patterns.
+## MLflow Tracking UI
+To view the logged runs, start the MLflow UI:
+```bash
+mlflow ui
+```
+If you encounter an import error related to `alembic`, ensure that the virtual environment is activated and that the `alembic` package version is compatible with your Python version. Re‑installing the dependencies often resolves the issue:
+```bash
+pip install --upgrade alembic
+```
+The UI is available at `http://127.0.0.1:5000`.
 
-## Output
-- Trained model saved as `payment_failure_model.pkl`
-- Evaluation metrics printed in notebook
-- Feature importance available for explainability
+## Clean‑up
+To deactivate the virtual environment:
+```bash
+deactivate
+```
+You can delete the `venv` directory and the generated model file (`payment_failure_model.pkl`) if you wish to start fresh.
+
+---
+*This README provides a reproducible workflow for training, evaluating, and serving a payment‑failure prediction model with MLflow tracking and FastAPI.*
