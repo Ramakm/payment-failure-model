@@ -1,6 +1,8 @@
 import json
 import joblib
 import pandas as pd
+import mlflow
+import mlflow.sklearn
 from datetime import datetime
 
 from sklearn.model_selection import train_test_split
@@ -12,9 +14,18 @@ from sklearn.metrics import classification_report
 
 
 # -----------------------
+# MLflow Setup
+# -----------------------
+print("Setting MLflow experiment...")
+mlflow.set_experiment("payment_failure_prediction")
+print("Enabling autolog...")
+mlflow.sklearn.autolog()
+print("MLflow setup done.")
+
+# -----------------------
 # Load data
 # -----------------------
-with open("synthetic_users.json", "r") as f:
+with open("userdata.json", "r") as f:
     raw_data = json.load(f)
 
 df = pd.json_normalize(raw_data)
@@ -103,16 +114,18 @@ pipeline = Pipeline(
 # -----------------------
 # Train model
 # -----------------------
-pipeline.fit(X_train, y_train)
+with mlflow.start_run():
+    pipeline.fit(X_train, y_train)
 
-# -----------------------
-# Evaluate
-# -----------------------
-y_pred = pipeline.predict(X_test)
-print(classification_report(y_test, y_pred))
+    # -----------------------
+    # Evaluate
+    # -----------------------
+    y_pred = pipeline.predict(X_test)
+    print(classification_report(y_test, y_pred))
 
-# -----------------------
-# Save model
-# -----------------------
-joblib.dump(pipeline, "payment_failure_model.pkl")
-print("Model saved as payment_failure_model.pkl")
+    # -----------------------
+    # Save model
+    # -----------------------
+    # MLflow autolog saves the model, but we also stick to the local file for the app
+    joblib.dump(pipeline, "payment_failure_model.pkl")
+    print("Model saved as payment_failure_model.pkl")
