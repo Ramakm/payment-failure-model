@@ -4,11 +4,6 @@ import joblib
 import json
 from datetime import datetime
 
-# -----------------------
-# Setup & Helper Functions
-# -----------------------
-
-# Set page config
 st.set_page_config(
     page_title="Payment Failure Prediction",
     page_icon="💳",
