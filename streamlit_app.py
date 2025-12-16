@@ -31,47 +31,24 @@ def preprocess_input(df):
     """
     Applies the same feature engineering as train.py.
     """
-    # Defensive copy
     df = df.copy()
     
     current_year = datetime.now().year
-    
-    # Calculate age
     if 'dateOfBirth' in df.columns:
         df["age"] = current_year - df["dateOfBirth"].astype(str).str[:4].astype(int)
-    
-    # Map ID verification
+ 
     if 'idVerificationStatus' in df.columns:
         df["id_verified"] = df["idVerificationStatus"].map({"Y": 1, "N": 0})
-        # Handle cases where mapping might produce NaN if unexpected values
         df["id_verified"] = df["id_verified"].fillna(0).astype(int)
-
-    # Calculate cross_border
-    # Ensure receiver.address.countryCode exists. In batch JSON it might be nested dicts, 
-    # but based on train.py it expects "receiver.address.countryCode" column after json_normalize
-    # Or if we pass a dict, we need to flatten it or extract it.
-    
-    # For the UI input, we ask for 'receiver_address_countryCode' directly.
-    # For batch input (JSON), we might need to normalize.
-    
-    # Let's handle both "receiver.address.countryCode" (from json_normalize) 
-    # and a manual column if constructed differently.
     
     col_receiver = "receiver.address.countryCode"
     if col_receiver not in df.columns:
-        # Check if we have 'receiver' column that is a dict (batch scenario before normalize?)
         pass 
-        # For simplicity, assume the input DF to this function has flattening applied if coming from JSON
-        # OR has the specific column names we set in the UI.
 
     if col_receiver in df.columns and 'countryOfBirth' in df.columns:
          df["cross_border"] = (
             df["countryOfBirth"] != df[col_receiver]
         ).astype(int)
-    
-    # Select columns expected by the pipeline
-    # The pipeline expects: ["occupation", "purposeOfTransaction", "sourceOfFunds", 
-    # "countryOfBirth", "nationality", "receiver.address.countryCode", "age", "id_verified", "cross_border"]
     
     expected_cols = [
         "occupation",
@@ -85,14 +62,7 @@ def preprocess_input(df):
         "cross_border"
     ]
     
-    # Add missing columns with defaults if necessary (not doing it here to be strict)
-    
-    # Filter to only expected columns
     return df[expected_cols]
-
-# -----------------------
-# Streamlit App
-# -----------------------
 
 def main():
     st.title("💳 Payment Failure Prediction")
@@ -108,9 +78,6 @@ def main():
 
     tab1, tab2 = st.tabs(["Single Prediction", "Batch Prediction"])
 
-    # -----------------------
-    # Tab 1: Single Prediction
-    # -----------------------
     with tab1:
         st.header("Single Transaction Prediction")
         
@@ -159,9 +126,6 @@ def main():
             except Exception as e:
                 st.error(f"Prediction error: {e}")
 
-    # -----------------------
-    # Tab 2: Batch Prediction
-    # -----------------------
     with tab2:
         st.header("Batch Prediction")
         

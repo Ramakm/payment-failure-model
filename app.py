@@ -4,9 +4,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 
-# -----------------------
-# Load Model
-# -----------------------
 try:
     model = joblib.load("payment_failure_model.pkl")
     print("Model loaded successfully.")
@@ -14,14 +11,8 @@ except Exception as e:
     print(f"Error loading model: {e}")
     model = None
 
-# -----------------------
-# Initialize App
-# -----------------------
 app = FastAPI(title="Payment Failure Prediction API", description="API to predict payment failure risk based on transaction metadata.")
 
-# -----------------------
-# Request Schema
-# -----------------------
 class PredictionRequest(BaseModel):
     occupation: str
     purposeOfTransaction: str
@@ -36,10 +27,6 @@ class PredictionRequest(BaseModel):
 class PredictionResponse(BaseModel):
     payment_failure_risk: int
     failure_probability: float
-
-# -----------------------
-# Endpoints
-# -----------------------
 
 @app.get("/")
 def home():
