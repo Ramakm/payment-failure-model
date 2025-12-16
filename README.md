@@ -120,3 +120,15 @@ You can delete the `venv` directory and the generated model file (`payment_failu
 
 ---
 *This README provides a reproducible workflow for training, evaluating, and serving a payment‑failure prediction model with MLflow tracking and FastAPI.*
+## Streamlit Deployment
+
+A live demo of the model is available at https://payment-failure.streamlit.app/. You can interact with the UI to upload a JSON file for batch predictions or fill in the form for a single prediction. The Streamlit app uses the same model and feature engineering logic as the FastAPI service.
+
+## Build by
+
+Ramakrushna Mohapatra 
+- [LinkedIn](https://www.linkedin.com/in/ramakrushnamohapatra/)
+- [GitHub](https://github.com/Ramakm)
+- [X](https://x.com/codewith_ram)
+- [Medium](https://medium.com/@techwith.ram)
+- [Instagram](https://www.instagram.com/techwith.ram/)
