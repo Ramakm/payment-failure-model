@@ -1,0 +1,44 @@
+[
+  {
+    "occupation": "worker",
+    "purposeOfTransaction": "shopping",
+    "sourceOfFunds": "Cash",
+    "countryOfBirth": "IN",
+    "nationality": "IN",
+    "idVerificationStatus": "N",
+    "receiver": {
+      "address": {
+        "countryCode": "US"
+      }
+    },
+    "dateOfBirth": "1990-01-01"
+  },
+  {
+    "occupation": "engineer",
+    "purposeOfTransaction": "bills",
+    "sourceOfFunds": "Credit Card",
+    "countryOfBirth": "US",
+    "nationality": "US",
+    "idVerificationStatus": "Y",
+    "receiver": {
+      "address": {
+        "countryCode": "US"
+      }
+    },
+    "dateOfBirth": "1985-05-15"
+  },
+   {
+    "occupation": "other",
+    "purposeOfTransaction": "medical",
+    "sourceOfFunds": "Cash",
+    "countryOfBirth": "UK",
+    "nationality": "UK",
+    "idVerificationStatus": "N",
+    "receiver": {
+      "address": {
+        "countryCode": "FR"
+      }
+    },
+    "dateOfBirth": "1992-12-12"
+  }
+]

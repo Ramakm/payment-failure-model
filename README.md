@@ -77,6 +77,7 @@ python predict.py '{"occupation":"worker","purposeOfTransaction":"shopping","sou
 The script will print a JSON response with `payment_failed` and `failure_probability`.
 
 For batch predictions, create a file `new_data.jsonl` with one JSON per line and run:
+
 ```bash
 python batch_predict.py new_data.jsonl
 ```
